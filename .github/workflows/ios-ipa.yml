@@ -16,6 +16,11 @@ jobs:
           channel: stable
       - run: flutter --version
       - run: flutter pub get
+      - name: Build llama.cpp for iOS
+        run: |
+          export HOMEBREW_NO_AUTO_UPDATE=1
+          brew install cmake ninja
+          bash local_plugins/llama_flutter_android/scripts/build_llama_ios.sh
       - run: flutter build ios --release --no-codesign
       - name: Package unsigned IPA
         run: |
