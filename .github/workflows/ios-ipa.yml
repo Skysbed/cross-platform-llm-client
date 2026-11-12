@@ -1,0 +1,26 @@
+name: ios-ipa
+on:
+  push:
+    branches: [ci/ios-ipa]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter --version
+      - run: flutter pub get
+      - run: flutter build ios --release --no-codesign
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qry PrivateLM-1.0.7-unsigned.ipa Payload
+          ls -lh PrivateLM-1.0.7-unsigned.ipa
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PrivateLM-unsigned-ipa
+          path: PrivateLM-1.0.7-unsigned.ipa
